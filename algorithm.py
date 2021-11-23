@@ -20,7 +20,7 @@ class initial:
     B.寫一個程式 做一個BIT
       做8次 產生一個灰階pixel
       再做五次 產生5個pixel
-      再做XOR去做合成 
+      再做XOR去做合成 jjjjj
 """
 """
     algo_2
