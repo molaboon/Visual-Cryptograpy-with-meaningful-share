@@ -7,10 +7,11 @@ from numpy.lib.function_base import select
 
 class initial:
     def __init__(self,imgURL) :
-        self.img = Image.open(imgURL)
+        self.img = imgURL
         #self.parameter = parameter
     def crateArray(self):
-        imgArray = np.array(self.img)
+        img = Image.open(self.img)
+        imgArray = np.array(img)
         
         return imgArray
 
@@ -49,70 +50,51 @@ class initial:
 
 class algo:
     def __init__(self, beta , Secret , Covers , nOfCovers ):
-        self.beta = beta
+        self.beta = float ( beta )
         self.Secret = Secret
         self.covers = Covers 
         self.nOfCovers = nOfCovers
         
-    def algo2(self,sPixel,nOfCovers):
+    def algo2(self,sPixel,nOfCovers,row,column):
         output = []
 
         if sPixel == 0:
             r = random.randrange(0,127) * 2
             
-            for cover in range( len (nOfCovers) - 1 ):
-                nOfCovers[cover] = nOfCovers[cover] ^ r 
-                output.append(nOfCovers)
+            for cover in range( len (nOfCovers) ):
+                nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r 
+                output.append(nOfCovers[cover][row][column])
 
         else:
             r = random.randrange(1,255,2) 
             
-            for cover in range( len(nOfCovers) - 1 ):
-                nOfCovers[cover] = nOfCovers[cover] ^ r 
-                output.append(nOfCovers)
-
+            for cover in range( len(nOfCovers) ):
+                nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r 
+                output.append(nOfCovers[cover][row][column])
+        """
         theLastCover = output[-1]
 
         for cover in range( len(output) ): 
             theLastCover = theLastCover ^ output[cover]
         
         output.append(theLastCover)
-
+        """
         return output
 
-
-    def algo3(self,algo2Output):
-        
-        for row in range( 512 ):
-            
-            for column in range(512): 
-                
-                if random.random < self.beta:
-                    
-                    for number in range ( len(self.covers) ):
-                        
-                        self.Cover[number][row][column] = algo2Output[number]
-                else:
-                    tmp =  self.covers[0][row][column]
-                    
-                    for cover in range(1, len(self.covers) ):
-                        tmp = tmp ^ self.covers[cover][row][column]
-                    
-                    if tmp % 2 == 0:
-                        pass
-                    else:  
-                        r = random.randint( len( self.covers ) )
-                        self.Cover[r][row][column] =  self.Cover[r][row][column] ^ 255
 
 if __name__ == "__main__":
 
     coverImgs = []
 
-    cover1 = initial("E:\\Visual Cryptograpyh\\input_image\\baboon.bmp")
-    cover2 = initial("E:\\Visual Cryptograpyh\\input_image\\barbara.bmp")
-    cover3 = initial("E:\\Visual Cryptograpyh\\input_image\\boat.bmp")
-    cover4 = initial("E:\\Visual Cryptograpyh\\input_image\\bike2.bmp")
-    cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\pepper.bmp")
+    s = initial("E:\\Visual Cryptograpyh\\input_image\\gray_lenna.png")
+
+    secret = s.crateArray()
+
+    cover1 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_baboon.png")
+    cover2 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_barbara.png")
+    cover3 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_boat.png")
+    cover4 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png")
+    cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_tower.png")
 
     coverImgs.append(cover1.crateArray())
     coverImgs.append(cover2.crateArray())
@@ -120,6 +102,44 @@ if __name__ == "__main__":
     coverImgs.append(cover4.crateArray())
     coverImgs.append(cover5.crateArray())
 
+    result1 = algo(0.7,secret,coverImgs,5)
+
+    for row in range(512):
+        for column in range(512):
+            a =random.random()
+
+            if  a >  0.2  :
+                tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+                for number in range ( len( coverImgs ) ):
+                    
+                    coverImgs[number][row][column] = tmp [number]
+
+            else:
+                tmp =  coverImgs[0][row][column]
+                
+                for cover in range(1, len( coverImgs ) ):
+                    tmp = tmp ^ coverImgs[cover][row][column]
+                
+                if tmp % 2 == 0:
+                    pass
+                else:  
+                    r = random.randint(  0 ,len( coverImgs )-1 )
+                    coverImgs[cover][row][column] =  coverImgs[r][row][column] ^ 255
+
+
+    
+    outi = coverImgs[0]
+    for i in coverImgs:
+        aa = Image.fromarray(i)
+        aa.show() 
+
+
+    for i in range (1 , 5) :
+        outi = outi ^ coverImgs[i]
+
+
+    o = Image.fromarray(outi)
+    o.show() 
 
     
 
