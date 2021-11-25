@@ -54,37 +54,32 @@ class algo:
         self.Secret = Secret
         self.covers = Covers 
         self.nOfCovers = nOfCovers
+        self.even = [170,]
         
     def algo2(self,sPixel,nOfCovers,row,column):
         output = []
 
-        if sPixel == 0:
-            r = random.randrange(0,127) * 2
-            
-            for cover in range( len (nOfCovers) ):
-                nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r 
-                output.append(nOfCovers[cover][row][column])
+        r = random.randint( 0,255 ) 
+        
+        for cover in range( len (nOfCovers)-1 ):
+            nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r
+            output.append(nOfCovers[cover][row][column])
 
-        else:
-            r = random.randrange(1,255,2) 
-            
-            for cover in range( len(nOfCovers) ):
-                nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r 
-                output.append(nOfCovers[cover][row][column])
-        """
-        theLastCover = output[-1]
+        
+        theLastCover = sPixel 
 
         for cover in range( len(output) ): 
             theLastCover = theLastCover ^ output[cover]
         
         output.append(theLastCover)
-        """
+        
         return output
 
 
 if __name__ == "__main__":
 
     coverImgs = []
+    shareImgs = []
 
     s = initial("E:\\Visual Cryptograpyh\\input_image\\gray_lenna.png")
 
@@ -96,11 +91,16 @@ if __name__ == "__main__":
     cover4 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png")
     cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_tower.png")
 
+
+
     coverImgs.append(cover1.crateArray())
     coverImgs.append(cover2.crateArray())
     coverImgs.append(cover3.crateArray())
     coverImgs.append(cover4.crateArray())
     coverImgs.append(cover5.crateArray())
+
+   
+
 
     result1 = algo(0.7,secret,coverImgs,5)
 
@@ -108,23 +108,23 @@ if __name__ == "__main__":
         for column in range(512):
             a =random.random()
 
-            if  a >  0.2  :
+            if  a <  0.5  :
                 tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
                 for number in range ( len( coverImgs ) ):
                     
                     coverImgs[number][row][column] = tmp [number]
 
             else:
-                tmp =  coverImgs[0][row][column]
+                tmp = 0
                 
-                for cover in range(1, len( coverImgs ) ):
+                for cover in range( len( coverImgs ) ):
                     tmp = tmp ^ coverImgs[cover][row][column]
                 
                 if tmp % 2 == 0:
                     pass
                 else:  
                     r = random.randint(  0 ,len( coverImgs )-1 )
-                    coverImgs[cover][row][column] =  coverImgs[r][row][column] ^ 255
+                    coverImgs[r][row][column] =  coverImgs[r][row][column] ^ 255
 
 
     
