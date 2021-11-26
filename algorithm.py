@@ -23,18 +23,6 @@ class initial:
       再做XOR去做合成 jjjjjkkk
 """
 """
-    algo_2
-    1.𝑀𝑛 ->𝑀𝑛 𝑜𝑑𝑑 & 𝑀𝑛 𝑒𝑣𝑒𝑛 
-    2.ℎ𝑤(𝑀𝑛 (𝑖, 1: 𝑛)) = odd ,𝑀𝑛 (𝑖, 1: 𝑛) into the matrix 𝑀𝑛 𝑜𝑑𝑑 
-    3. If 𝑆(𝑖,𝑗) = 0
-    Randomly choose a row vector =  r 
-    𝑅1 (𝑖,𝑗) = 𝑀𝑛 𝑒𝑣𝑒𝑛(𝑟, 1), … 𝑅𝑛 (𝑖,𝑗) = 𝑀𝑛 𝑒𝑣𝑒𝑛(𝑟, 𝑛) 
-
-    If 𝑆(𝑖,𝑗) = 1
-    Randomly choose a row vector =  r 
-    𝑅1 (𝑖,𝑗) = 𝑀𝑛 odd(𝑟, 1), … 𝑅𝑛 (𝑖,𝑗) = 𝑀𝑛 odd(𝑟, 𝑛) 
-""" 
-"""
     Input: S & C(cover image), both with 𝐻 × 𝑊 pixels & a parameter β.
 
     d -> which is 1 with probability β and 0 with probability 1 −𝛽.
@@ -47,14 +35,23 @@ class initial:
     Output: n meaningful shares 𝑅1,…, 𝑅𝑛, each of which is 𝐻 × 𝑊 in size
 """
 
+"""
+    三大方向:
+    1. share 全不動
+    2. 隨機挑一個cover跟 黑色做 XOR (做黑色)
+    3. 隨機選擇 n-1 張 做XOR 在 ^S or black
+    
+"""
+
+
+
 
 class algo:
-    def __init__(self, beta , Secret , Covers , nOfCovers ):
+    def __init__(self, beta , Secret , Covers ):
         self.beta = float ( beta )
         self.Secret = Secret
         self.covers = Covers 
-        self.nOfCovers = nOfCovers
-        self.even = [170,]
+
         
     def algo2(self,sPixel,nOfCovers,row,column):
         output = []
@@ -74,6 +71,13 @@ class algo:
         output.append(theLastCover)
         
         return output
+
+class algo3:
+    def __init__(self):
+        pass
+    
+    def  part1(self):
+        pass
 
 
 if __name__ == "__main__":
@@ -102,7 +106,7 @@ if __name__ == "__main__":
    
 
 
-    result1 = algo(0.7,secret,coverImgs,5)
+    result1 = algo(0.7,secret,coverImgs)
 
     for row in range(512):
         for column in range(512):
