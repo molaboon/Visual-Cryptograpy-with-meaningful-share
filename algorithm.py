@@ -47,38 +47,71 @@ class initial:
 
 
 class algo:
-    def __init__(self, beta , Secret , Covers ):
-        self.beta = float ( beta )
+    def __init__(self,  Secret , Covers ):
         self.Secret = Secret
         self.covers = Covers 
 
         
-    def algo2(self,sPixel,nOfCovers,row,column):
+    def algo2(self,sPixel,share,nOfCovers,row,column):
         output = []
 
         r = random.randint( 0,255 ) 
-        
-        for cover in range( len (nOfCovers)-1 ):
-            nOfCovers[cover][row][column] = nOfCovers[cover][row][column] ^ r
-            output.append(nOfCovers[cover][row][column])
+        """
+        for cover in range( len (nOfCovers) ):
+            share[cover][row][column] = nOfCovers[cover][row][column] ^ r
+            output.append(share[cover][row][column])
+        """
 
+        ri = random.randint(0,4)
+        tmpXOR = sPixel
         
-        theLastCover = sPixel 
+        for cover in range( len(nOfCovers) ):
+            if cover == ri:
+                pass
+            else:
+                tmpXOR = tmpXOR ^  nOfCovers[cover][row][column]
+        
+        share[ri][row][column] = tmpXOR 
 
-        for cover in range( len(output) ): 
-            theLastCover = theLastCover ^ output[cover]
-        
-        output.append(theLastCover)
-        
+        for cover in range( len (nOfCovers) ):
+            if cover == ri:
+                output.append(share[cover][row][column])
+            else:
+                share[cover][row][column] = nOfCovers[cover][row][column] ^ r
+                output.append(share[cover][row][column])
+            
+
         return output
 
 class algo3:
-    def __init__(self):
-        pass
+    def __init__(self,coverImgs,):
+        self.coverIms = coverImgs 
     
-    def  part1(self):
-        pass
+    def method1(self):
+        for row in range(512):
+            for column in range(512):
+                a =random.random()
 
+                if  a <  0.5  :
+                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+                    for number in range ( len( coverImgs ) ):
+                        
+                        coverImgs[number][row][column] = tmp [number]
+
+                else:
+                    tmp = 0
+                    
+                    for cover in range( len( coverImgs ) ):
+                        tmp = tmp ^ coverImgs[cover][row][column]
+                    
+                    if tmp % 2 == 0:
+                        pass
+                    else:  
+                        r = random.randint(  0 ,len( coverImgs )-1 )
+                        coverImgs[r][row][column] =  coverImgs[r][row][column] ^ 255
+
+    def method2(self):
+        pass
 
 if __name__ == "__main__":
 
@@ -102,18 +135,22 @@ if __name__ == "__main__":
     coverImgs.append(cover3.crateArray())
     coverImgs.append(cover4.crateArray())
     coverImgs.append(cover5.crateArray())
+    
+    shareImgs.append(cover1.crateArray()) 
+    shareImgs.append(cover2.crateArray()) 
+    shareImgs.append(cover3.crateArray()) 
+    shareImgs.append(cover4.crateArray()) 
+    shareImgs.append(cover5.crateArray()) 
 
-   
 
-
-    result1 = algo(0.7,secret,coverImgs)
+    result1 = algo(secret,coverImgs)
 
     for row in range(512):
         for column in range(512):
             a =random.random()
 
-            if  a <  0.5  :
-                tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+            if  a <  0.99  :
+                tmp = result1.algo2( secret[row][column] ,shareImgs, coverImgs , row, column)
                 for number in range ( len( coverImgs ) ):
                     
                     coverImgs[number][row][column] = tmp [number]
@@ -131,15 +168,16 @@ if __name__ == "__main__":
                     coverImgs[r][row][column] =  coverImgs[r][row][column] ^ 255
 
 
+
     
-    outi = coverImgs[0]
-    for i in coverImgs:
+    outi = shareImgs[0]
+    for i in shareImgs:
         aa = Image.fromarray(i)
         aa.show() 
 
 
     for i in range (1 , 5) :
-        outi = outi ^ coverImgs[i]
+        outi = outi ^ shareImgs[i]
 
 
     o = Image.fromarray(outi)
