@@ -45,7 +45,6 @@ class initial:
 
 
 
-
 class algo:
     def __init__(self,  Secret , Covers ):
         self.Secret = Secret
@@ -62,7 +61,7 @@ class algo:
             output.append(share[cover][row][column])
         """
 
-        ri = random.randint(0,4)
+        ri = random.randint(0, len(nOfCovers)-1 )
         tmpXOR = sPixel
         
         for cover in range( len(nOfCovers) ):
@@ -87,28 +86,21 @@ class algo3:
     def __init__(self,coverImgs,):
         self.coverIms = coverImgs 
     
+
+    # 全不動 
     def method1(self):
+
         for row in range(512):
             for column in range(512):
                 a =random.random()
 
-                if  a <  0.5  :
-                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+                if  a <  beta  :
+                    tmp = result1.algo2( secret[row][column] ,shareImgs, coverImgs , row, column)
                     for number in range ( len( coverImgs ) ):
                         
-                        coverImgs[number][row][column] = tmp [number]
+                        shareImgs[number][row][column] = tmp [number]
 
-                else:
-                    tmp = 0
-                    
-                    for cover in range( len( coverImgs ) ):
-                        tmp = tmp ^ coverImgs[cover][row][column]
-                    
-                    if tmp % 2 == 0:
-                        pass
-                    else:  
-                        r = random.randint(  0 ,len( coverImgs )-1 )
-                        coverImgs[r][row][column] =  coverImgs[r][row][column] ^ 255
+                
 
     def method2(self):
         pass
@@ -145,27 +137,19 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
+    beta = 0.9
+
     for row in range(512):
         for column in range(512):
             a =random.random()
 
-            if  a <  0.99  :
+            if  a <  beta  :
                 tmp = result1.algo2( secret[row][column] ,shareImgs, coverImgs , row, column)
                 for number in range ( len( coverImgs ) ):
                     
-                    coverImgs[number][row][column] = tmp [number]
+                    shareImgs[number][row][column] = tmp [number]
 
-            else:
-                tmp = 0
-                
-                for cover in range( len( coverImgs ) ):
-                    tmp = tmp ^ coverImgs[cover][row][column]
-                
-                if tmp % 2 == 0:
-                    pass
-                else:  
-                    r = random.randint(  0 ,len( coverImgs )-1 )
-                    coverImgs[r][row][column] =  coverImgs[r][row][column] ^ 255
+            
 
 
 
