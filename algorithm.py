@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
-    beta = 0.2
+    beta = 0.9
 
     for row in range(512):
         for column in range(512):
@@ -154,12 +154,9 @@ if __name__ == "__main__":
             else: 
                 randcover = random.randint(0,4)
                
-                tmpXOR = secret[row][column]
+                tmpXOR = int( secret[row][column] * 0.2 ) #位移值
 
-                
-                if tmpXOR > 128 :
-                    tmpXOR = tmpXOR ^ 255
-                
+            
 
                 for cover in range( len(coverImgs) ):
                     if cover == randcover:
