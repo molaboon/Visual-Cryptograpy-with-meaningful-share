@@ -103,9 +103,34 @@ class algo3:
                         shareImgs[number][row][column] = tmp [number]
 
                 
-
+    #轉黑
     def method2(self):
-        pass
+        
+        for row in range(512):
+            for column in range(512):
+                a =random.random()
+
+                if  a <=  beta  :
+                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+                    for number in range ( len( coverImgs ) ):
+                        
+                        shareImgs[number][row][column] = tmp [number]
+
+                else: 
+                    randcover = random.randint(0,4)
+                    runi = random.uniform(0,0.5)
+                    tmpXOR = int( secret[row][column] * runi ) #位移值
+
+                
+
+                    for cover in range( len(coverImgs) ):
+                        if cover == randcover:
+                            pass
+                        else:
+                            tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
+                            
+                    shareImgs[randcover][row][column] = tmpXOR
+
 
 if __name__ == "__main__":
 
@@ -120,7 +145,7 @@ if __name__ == "__main__":
     cover2 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_barbara.png")
     cover3 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_boat.png")
     cover4 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png")
-    cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_tower.png")
+    cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_jet.png")
 
 
 
@@ -139,7 +164,7 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
-    beta = 0.9
+    beta = 0.2
 
     for row in range(512):
         for column in range(512):
@@ -153,8 +178,8 @@ if __name__ == "__main__":
 
             else: 
                 randcover = random.randint(0,4)
-               
-                tmpXOR = int( secret[row][column] * 0.2 ) #位移值
+                runi = random.uniform(0,0.5)
+                tmpXOR = int( secret[row][column] * runi ) #位移值
 
             
 
@@ -185,9 +210,9 @@ if __name__ == "__main__":
 
     
     outi = shareImgs[0]
-    for i in shareImgs:
-        aa = Image.fromarray(i)
-        aa.show() 
+    for i in range( len(shareImgs) ):
+        aa = Image.fromarray( shareImgs[i] )
+        aa.save(str( i ) + ".png" ) 
 
 
     for i in range (1 , 5) :
@@ -195,7 +220,7 @@ if __name__ == "__main__":
 
 
     o = Image.fromarray(outi)
-    o.show() 
+    o.save("output.png") 
 
     
 
