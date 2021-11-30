@@ -51,33 +51,35 @@ class algo:
         self.covers = Covers 
 
         
-    def algo2(self,sPixel,share,nOfCovers,row,column):
+    def algo2(self,sPixel,Covers,row,column):
         output = []
 
         r = random.randint( 0,255 ) 
         """
-        for cover in range( len (nOfCovers) ):
-            share[cover][row][column] = nOfCovers[cover][row][column] ^ r
+        for cover in range( len (Covers) ):
+            share[cover][row][column] = Covers[cover][row][column] ^ r
             output.append(share[cover][row][column])
+            
+        
         """
 
-        ri = random.randint(0, len(nOfCovers)-1 )
+        ri = random.randint(0, len(Covers)-1 )
         tmpXOR = sPixel
         
-        for cover in range( len(nOfCovers) ):
+        for cover in range( len(Covers) ):
             if cover == ri:
                 pass
             else:
-                tmpXOR = tmpXOR ^  nOfCovers[cover][row][column]
+                tmpXOR = tmpXOR ^  Covers[cover][row][column]
         
-        share[ri][row][column] = tmpXOR 
+        #share[ri][row][column] = tmpXOR 
 
-        for cover in range( len (nOfCovers) ):
+        for cover in range( len (Covers) ):
             if cover == ri:
-                output.append(share[cover][row][column])
+                output.append(tmpXOR)
             else:
-                share[cover][row][column] = nOfCovers[cover][row][column] ^ r
-                output.append(share[cover][row][column])
+                cXORrandint = Covers[cover][row][column] ^ r
+                output.append(cXORrandint)
             
 
         return output
@@ -137,21 +139,52 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
-    beta = 0.9
+    beta = 0.2
 
     for row in range(512):
         for column in range(512):
             a =random.random()
 
-            if  a <  beta  :
-                tmp = result1.algo2( secret[row][column] ,shareImgs, coverImgs , row, column)
+            if  a <=  beta  :
+                tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
                 for number in range ( len( coverImgs ) ):
                     
                     shareImgs[number][row][column] = tmp [number]
 
-            
+            else: 
+                randcover = random.randint(0,4)
+               
+                tmpXOR = secret[row][column]
 
+                
+                if tmpXOR > 128 :
+                    tmpXOR = tmpXOR ^ 255
+                
 
+                for cover in range( len(coverImgs) ):
+                    if cover == randcover:
+                        pass
+                    else:
+                        tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
+                        
+                shareImgs[randcover][row][column] = tmpXOR
+                        
+                
+    """
+        coverXOR = 0
+                for cover in range(5):
+                    coverXOR = coverXOR ^ coverImgs[cover][row][column]
+        
+
+        if coverXOR < 127 : 
+                    
+                    shareImgs[randcover][row][column] =  tmpXOR  
+                
+                else:
+                    
+                    shareImgs[randcover][row][column] = tmpXOR ^ 255
+
+    """
 
     
     outi = shareImgs[0]
