@@ -97,7 +97,7 @@ class algo3:
                 a =random.random()
 
                 if  a <  beta  :
-                    tmp = result1.algo2( secret[row][column] ,shareImgs, coverImgs , row, column)
+                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
                     for number in range ( len( coverImgs ) ):
                         
                         shareImgs[number][row][column] = tmp [number]
@@ -164,32 +164,18 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
-    beta = 0.2
+    beta = 0.9
 
     for row in range(512):
-        for column in range(512):
-            a =random.random()
+            for column in range(512):
+                a =random.random()
 
-            if  a <=  beta  :
-                tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
-                for number in range ( len( coverImgs ) ):
-                    
-                    shareImgs[number][row][column] = tmp [number]
-
-            else: 
-                randcover = random.randint(0,4)
-                runi = random.uniform(0,0.5)
-                tmpXOR = int( secret[row][column] * runi ) #位移值
-
-            
-
-                for cover in range( len(coverImgs) ):
-                    if cover == randcover:
-                        pass
-                    else:
-                        tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
+                if  a <  beta  :
+                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
+                    for number in range ( len( coverImgs ) ):
                         
-                shareImgs[randcover][row][column] = tmpXOR
+                        shareImgs[number][row][column] = tmp [number]
+
                         
                 
     """
