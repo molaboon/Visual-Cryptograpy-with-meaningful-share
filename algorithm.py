@@ -39,11 +39,9 @@ class initial:
     三大方向:
     1. share 全不動
     2. 隨機挑一個cover跟 黑色做 XOR (做黑色)
-    3. 隨機選擇 n-1 張 做XOR 在 ^S or black
-    
+    3. 隨機選擇 n-1 張 做XOR 在 ^S or black(去做計算，最後XOR出來變成黑色)
+    4. 每一張都是share ,加密歸加密 (亂數*4 + 算第五張) 
 """
-
-
 
 class algo:
     def __init__(self,  Secret , Covers ):
@@ -53,39 +51,60 @@ class algo:
         
     def algo2(self,sPixel,Covers,row,column):
         output = []
+        """
+        randomX = random.randint( 0,255 ) 
+        randomY = random.randint( 0,255 )
+        """
+        array2D = [ [0 for _ in range(8)] for _ in range(len(Covers)) ]
 
-        r = random.randint( 0,255 ) 
         """
         for cover in range( len (Covers) ):
             share[cover][row][column] = Covers[cover][row][column] ^ r
             output.append(share[cover][row][column])
-            
-        
+
         """
 
         ri = random.randint(0, len(Covers)-1 )
-        tmpXOR = sPixel
-        
-        for cover in range( len(Covers) ):
-            if cover == ri:
-                pass
-            else:
-                tmpXOR = tmpXOR ^  Covers[cover][row][column]
-        
-        #share[ri][row][column] = tmpXOR 
+        secret = list( format(sPixel,"b") ) 
 
+        while len(secret) < 8:
+            secret.insert(0,"0")
+
+        #share[ri][row][column] = tmpXOR 
+        """
         for cover in range( len (Covers) ):
             if cover == ri:
-                output.append(tmpXOR)
-            else:
-                cXORrandint = Covers[cover][row][column] ^ r
-                output.append(cXORrandint)
+                pass
             
+            else:
+                cXORrandint = Covers[cover][row][column] ^ Covers[cover][randomX][randomY]
+                output.append(cXORrandint)
+        
+        for cover in range( 4 ):
+            tmpXOR = tmpXOR ^  output[cover]
+    
+        output.insert(ri,tmpXOR)
+        
+        """
+        countBits = 0
+        countCovers = ri
+
+        while countBits < 8:
+            array2D[countCovers][countBits] = secret[countBits]
+            countBits += 1
+            if countCovers ==  4 :
+                countCovers = 0
+            else:
+                countCovers += 1
+
+
+        for i in range( len(array2D) ):
+            output.append( int( "".join(map(str, array2D[i]) ) , 2 ) )
 
         return output
 
 class algo3:
-    def __init__(self,coverImgs,):
+    def __init__(self,coverImgs):
         self.coverIms = coverImgs 
     
 
@@ -118,11 +137,7 @@ class algo3:
 
                 else: 
                     randcover = random.randint(0,4)
-                    runi = random.uniform(0,0.5)
-                    tmpXOR = int( secret[row][column] * runi ) #位移值
-
-                
-
+            
                     for cover in range( len(coverImgs) ):
                         if cover == randcover:
                             pass
@@ -147,8 +162,6 @@ if __name__ == "__main__":
     cover4 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png")
     cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_jet.png")
 
-
-
     coverImgs.append(cover1.crateArray())
     coverImgs.append(cover2.crateArray())
     coverImgs.append(cover3.crateArray())
@@ -164,7 +177,9 @@ if __name__ == "__main__":
 
     result1 = algo(secret,coverImgs)
 
-    beta = 0.9
+    beta = 0.8
+
+    # 0.3 0.7 0.25 0.75
 
     for row in range(512):
             for column in range(512):
@@ -176,7 +191,6 @@ if __name__ == "__main__":
                         
                         shareImgs[number][row][column] = tmp [number]
 
-                        
                 
     """
         coverXOR = 0
@@ -195,19 +209,19 @@ if __name__ == "__main__":
     """
 
     
-    outi = shareImgs[0]
+    outi = 0
     for i in range( len(shareImgs) ):
         aa = Image.fromarray( shareImgs[i] )
-        aa.save(str( i ) + ".png" ) 
+        #aa.save(str( i ) + ".png" ) 
+        aa.show()
 
-
-    for i in range (1 , 5) :
+    for i in range ( len(shareImgs) ) :
         outi = outi ^ shareImgs[i]
 
 
     o = Image.fromarray(outi)
-    o.save("output.png") 
-
+    #o.save("output.png") 
+    o.show()
     
 
 
