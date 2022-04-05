@@ -1,232 +1,113 @@
 from PIL import Image 
 import numpy as np
 import random  
-import os
+import math
+import matplotlib.image as mpimg
+from scipy import rand 
+from algo_2 import algo2
+import cv2
 
-class initial:
-    def __init__(self,imgURL) :
-        self.img = imgURL
-        #self.parameter = parameter
-    def crateArray(self):
-        img = Image.open(self.img)
-        imgArray = np.array(img)
-        
-        return imgArray
-
-class algo:
-    def __init__(self,  Secret , Covers ):
-        self.Secret = Secret
-        self.covers = Covers 
-
-        
-    def algo2(self,sPixel,Covers,row,column):
-        output = []
-        output = []
-
-        r = random.randint( 0,255 ) 
-        """
-        for cover in range( len (Covers) ):
-            share[cover][row][column] = Covers[cover][row][column] ^ r
-            output.append(share[cover][row][column])
-            
-        
-        """
-
-        ri = random.randint(0, len(Covers)-1 )
-        tmpXOR = sPixel
-
-        for cover in range( len(Covers) ):
-            if cover == ri:
-                pass
-            else:
-                tmpXOR = tmpXOR ^  Covers[cover][row][column]
-
-        #share[ri][row][column] = tmpXOR 
-
-        for cover in range( len (Covers) ):
-            if cover == ri:
-                output.append(tmpXOR)
-            else:
-                cXORrandint = Covers[cover][row][column] ^ r
-                output.append(cXORrandint)
-
-
-        return output
-
-class algo3:
-    def __init__(self,coverImgs):
-        self.coverIms = coverImgs 
     
-
-    # 全不動 
-    def method1(self):
-
-        for row in range(512):
-            for column in range(512):
-                a =random.random()
-
-                if  a <  beta  :
-                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
-                    for number in range ( len( coverImgs ) ):
-                        
-                        shareImgs[number][row][column] = tmp [number]
-
-                
-    #轉黑
-    def method3(self):
-        
-        for row in range(512):
-            for column in range(512):
-                a =random.random()
-
-                if  a <=  beta  :
-                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
-                    for number in range ( len( coverImgs ) ):
-                        
-                        shareImgs[number][row][column] = tmp [number]
-
-                else: 
-                    randcover = random.randint(0,4)
-                    tmpXOR = 0
-                    for cover in range( len(coverImgs) ):
-                        if cover == randcover:
-                            pass
-                        else:
-                            tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
-                            
-                    shareImgs[randcover][row][column] = tmpXOR
+def crateArray(url):
+    img = Image.open(url)
+    imgArray = np.array(img)
     
-    def method2(self):
-        for row in range(512):
-            for column in range(512):
-                a =random.random()
+    return imgArray
+"""
+    對五張圖片的每個bit 去做演算法2:
+    "0" "1" "0" "1" "0" "1" "0" "1" "0"
 
-                if  a <  beta  :
-                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
-                    for number in range ( len( coverImgs ) ):
-                        
-                        shareImgs[number][row][column] = tmp [number]
+    如何選圖片?
+    若如果要翻最左邊的數值(1)
+    則去尋找最接近128的圖片去做翻轉
 
-                else:
-                    tmpXOR = 0
-                    similarCover = 0
-                    min = 999
-                    def hammingDistance(x, y):
-                        a=x^y
-                        num = 0
-                        while a != 0:
-                            num += a & 1
-                            a >>= 1
-                        return num
+    如果要翻左邊數過來第二個數字,
+    則去選擇最接近64 or 128+64的圖片去做翻轉
 
-                    for cover in range( len(coverImgs) ):
-                        tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
-            
-                    for cover in range( len(coverImgs) ):
-                        hd = hammingDistance( secret[row][column],coverImgs[cover][row][column] )
-                        if  hd == min : 
-                            preDis = abs( int( secret[row][column] ) - int( coverImgs[similarCover][row][column] )  )
-                            nowDis = abs( int( secret[row][column] ) - int( coverImgs[cover][row][column] )  )
-                            if preDis > nowDis:
-                                similarCover = cover
-                            else:
-                                continue
-                        elif  hd < min : 
-                            min = hd
-                            similarCover = cover
-                
-                    similarPixel = secret[row][column] ^ coverImgs[similarCover][row][column]
-                    
-                    tmpXOR = tmpXOR ^ similarPixel ^ coverImgs[similarCover][row][column]
-                    """    
-
-                    for cover in range( len(coverImgs) ):
-                            if abs( int( secret[row][column] ) - int( coverImgs[cover][row][column] )  ) < min:
-                                min = abs( int( coverImgs[cover][row][column] ) - int( tmpXOR ^  coverImgs[cover][row][column] )  )
-                                similarCover = cover
-                    tmpXOR = tmpXOR ^ coverImgs[similarCover][row][column]
-                    shareImgs[similarCover][row][column] = secret[row][column]
-                    """
-                    min = 999
-                    for cover in range( len(coverImgs) ):
-                        if cover != similarCover:
-                            if abs( int( coverImgs[cover][row][column] ) - int( tmpXOR ^  coverImgs[cover][row][column] )  ) < min:
-                                min = abs( int( coverImgs[cover][row][column] )  - int( tmpXOR ^  coverImgs[cover][row][column] )  )
-                                lastCover = cover
-                        
-                    #avrpixel = 0 
-                    """
-                    if row > 0 and row < 510 and column > 0 and column < 510:
-                        avrpixel = avrpixel +coverImgs[randcover][row-1][column-1] + coverImgs[randcover][row-1][column] + coverImgs[randcover][row-1][column+1]
-                        avrpixel = avrpixel +coverImgs[randcover][row+1][column-1] + coverImgs[randcover][row+1][column] + coverImgs[randcover][row+1][column+1]
-                        avrpixel = avrpixel +coverImgs[randcover][row][column-1] + secret[row][column] + coverImgs[randcover][row][column+1]
-                        avrpixel = avrpixel // 9
-                    """
-                    
-                    #tmpXOR = ( tmpXOR  ^ coverImgs[similarCover][row][column] ^ coverImgs[randcover][row][column]  ) 
-                    # tmpXOR  = tmpXOR ^ secret[row][column]
-                    #^ coverImgs[similarCover][row][column]
-                    #shareImgs[randcover][row][column] = tmpXOR ^ secret[row][column]
-                    shareImgs[lastCover][row][column] = tmpXOR ^  coverImgs[lastCover][row][column]
-            
-    
+    如果這些演算法不適用,那就在去找。
+"""
 
 if __name__ == "__main__":
-
     coverImgs = []
     shareImgs = []
     
-    cover4= initial("E:\\Visual Cryptograpyh\\input_image\\gray_baboon.png")
+    s = "E:\\Visual Cryptograpyh\\input_image\\gray_lenna.png"
     
-    s = initial("E:\\Visual Cryptograpyh\\input_image\\gray_lenna.png")
-
-    secret = s.crateArray()
-    outi = secret
-
-    cover1 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_barbara.png")
-    cover2 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_boat.png")
-    cover5 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png")
-    cover3 = initial("E:\\Visual Cryptograpyh\\input_image\\gray_jet.png")
-
-    coverImgs.append(cover1.crateArray())
-    coverImgs.append(cover2.crateArray())
-    coverImgs.append(cover3.crateArray())
-    coverImgs.append(cover4.crateArray())
-    coverImgs.append(cover5.crateArray())
+    cover3 = "E:\\Visual Cryptograpyh\\input_image\\gray_barbara.png"
+    cover2 = "E:\\Visual Cryptograpyh\\input_image\\gray_logo.png"
+    cover1 = "E:\\Visual Cryptograpyh\\input_image\\gray_baboon.png"
+    cover4 = "E:\\Visual Cryptograpyh\\input_image\\gray_jet.png"
+    cover5 = "E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png"
     
-    shareImgs.append(cover1.crateArray()) 
-    shareImgs.append(cover2.crateArray()) 
-    shareImgs.append(cover3.crateArray()) 
-    shareImgs.append(cover4.crateArray()) 
-    shareImgs.append(cover5.crateArray()) 
+    secret = crateArray(s)
+    
+    coverImgs.append( crateArray(cover1) )
+    coverImgs.append( crateArray(cover2) )
+    coverImgs.append( crateArray(cover3) )
+    coverImgs.append( crateArray(cover4) )
+    coverImgs.append( crateArray(cover5) )
+    
+    shareImgs.append( crateArray(cover1) ) 
+    shareImgs.append( crateArray(cover2) ) 
+    shareImgs.append( crateArray(cover3) ) 
+    shareImgs.append( crateArray(cover4) ) 
+    shareImgs.append( crateArray(cover5) ) 
 
-
-    result1 = algo(secret,coverImgs)
-
-    beta = 1
-
+    beta = 0
+    count = [0,0,0,0,0,0]                
+                
     # 0.3 0.7 0.25 0.75
     for row in range(512):
+        for column in range(512):
+            a=random.random()
+            if  a <  beta  :
+                tmp = algo2( secret[row][column] , coverImgs , row, column)
+                for number in range ( len( coverImgs ) ):
+                    shareImgs[number][row][column] = tmp [number]
+            else:
+                allImgsXOR = secret[row][column]
+
+                for cover in range( len(coverImgs) ):
+                    allImgsXOR = allImgsXOR ^ coverImgs[cover][row][column]
+
+                randcover = random.randint(0,4)
+                min = 999
+                minCovers = []
+                for cover in range( len(coverImgs) ):
+                    tmpMin = abs( ( int( coverImgs[cover][row][column] ) - int( allImgsXOR ^ coverImgs[cover][row][column] )))
+                    if tmpMin < min:
+                        minCovers.clear()
+                        min = tmpMin 
+                        minCovers.append(cover)
+                    elif tmpMin == min: 
+                        minCovers.append(cover)
+
+                if len(minCovers) > 1 :
+                    count[5]+=1
+                    randcover = random.choice(minCovers)
+                elif len(minCovers) == 1:
+                    randcover = minCovers[0]
+                
+                count[randcover]+=1
+                
+                #allImgsXOR = secret[row][column] ^ allImgsXOR
+                
+                shareImgs[randcover][row][column] = allImgsXOR ^ coverImgs[randcover][row][column]
+                psnr = []
+    for cover in range(5):
+        mse = 0
+        for row in range(512):
             for column in range(512):
-                a =random.random()
+                mse += ( (int( coverImgs[cover][row][column] ) - int( shareImgs[cover][row][column]))**2 )
 
-                if  a <=  beta  :
-                    tmp = result1.algo2( secret[row][column] , coverImgs , row, column)
-                    for number in range ( len( coverImgs ) ):
-                        
-                        shareImgs[number][row][column] = tmp [number]
+        mse = mse //( 512*512 )
+        if mse == 0:
+            mse+=1
+        ps = 10 * math.log( ( (255**2 ) /mse ),10 ) 
+        psnr.append(ps)
 
-                else: 
-                    randcover = random.randint(0,4)
-                    tmpXOR = 0
-                    for cover in range( len(coverImgs) ):
-                        if cover == randcover:
-                            pass
-                        else:
-                            tmpXOR = tmpXOR ^  coverImgs[cover][row][column]
-                            
-                    shareImgs[randcover][row][column] = tmpXOR
-    
+    print(psnr)
+  
     outi = 0
     for i in range( len(shareImgs) ):
         aa = Image.fromarray( shareImgs[i] )
@@ -241,6 +122,7 @@ if __name__ == "__main__":
     o.save("output_algo2_0.75.png") 
     o.show()
     
+
 
 
 
