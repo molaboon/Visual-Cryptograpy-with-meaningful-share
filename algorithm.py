@@ -6,7 +6,7 @@ import matplotlib.image as mpimg
 from scipy import rand 
 from algo_2 import algo2
 import cv2
-
+from countMSE import countmse
     
 def crateArray(url):
     img = Image.open(url)
@@ -93,16 +93,11 @@ if __name__ == "__main__":
                 #allImgsXOR = secret[row][column] ^ allImgsXOR
                 
                 shareImgs[randcover][row][column] = allImgsXOR ^ coverImgs[randcover][row][column]
-                psnr = []
+    
+    psnr = []
     for cover in range(5):
-        mse = 0
-        for row in range(512):
-            for column in range(512):
-                mse += ( (int( coverImgs[cover][row][column] ) - int( shareImgs[cover][row][column]))**2 )
-
-        mse = mse //( 512*512 )
-        if mse == 0:
-            mse+=1
+        mse = countmse( coverImgs[cover],shareImgs[cover],512,512)
+        
         ps = 10 * math.log( ( (255**2 ) /mse ),10 ) 
         psnr.append(ps)
 
