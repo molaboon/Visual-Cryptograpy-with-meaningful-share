@@ -2,8 +2,6 @@ from PIL import Image
 import numpy as np
 import random  
 import math
-import matplotlib.image as mpimg
-from scipy import rand 
 from algo_2 import algo2
 import cv2
 from countMSE import countmse
@@ -34,26 +32,34 @@ if __name__ == "__main__":
     s = "E:\\Visual Cryptograpyh\\input_image\\gray_lenna.png"
     
     cover3 = "E:\\Visual Cryptograpyh\\input_image\\gray_barbara.png"
-    cover2 = "E:\\Visual Cryptograpyh\\input_image\\gray_logo.png"
+    cover2 = "E:\\Visual Cryptograpyh\\input_image\\gray_owl.png"
     cover1 = "E:\\Visual Cryptograpyh\\input_image\\gray_baboon.png"
-    cover4 = "E:\\Visual Cryptograpyh\\input_image\\gray_jet.png"
+    cover4 = "E:\\Visual Cryptograpyh\\input_image\\gray_bird.png"
     cover5 = "E:\\Visual Cryptograpyh\\input_image\\gray_butterfly.png"
     
     secret = crateArray(s)
     
+    col = 512
+
+    OriArray1 = np.zeros((col, col),int)
+    OriArray2 = np.zeros((col, col),int)
+    OriArray3 = np.zeros((col, col),int)
+    OriArray4 = np.zeros((col, col),int)
+    OriArray5 = np.zeros((col, col),int)
+
     coverImgs.append( crateArray(cover1) )
     coverImgs.append( crateArray(cover2) )
     coverImgs.append( crateArray(cover3) )
     coverImgs.append( crateArray(cover4) )
     coverImgs.append( crateArray(cover5) )
     
-    shareImgs.append( crateArray(cover1) ) 
-    shareImgs.append( crateArray(cover2) ) 
-    shareImgs.append( crateArray(cover3) ) 
-    shareImgs.append( crateArray(cover4) ) 
-    shareImgs.append( crateArray(cover5) ) 
+    shareImgs.append( OriArray1 ) 
+    shareImgs.append( OriArray2 ) 
+    shareImgs.append( OriArray3 ) 
+    shareImgs.append( OriArray4 ) 
+    shareImgs.append( OriArray5 ) 
 
-    beta = 0
+    beta = 0.5
     count = [0,0,0,0,0,0]                
                 
     # 0.3 0.7 0.25 0.75
@@ -68,13 +74,20 @@ if __name__ == "__main__":
                 allImgsXOR = secret[row][column]
 
                 for cover in range( len(coverImgs) ):
-                    allImgsXOR = allImgsXOR ^ coverImgs[cover][row][column]
+                    try :
+                        allImgsXOR = allImgsXOR ^ coverImgs[cover][row][column][0]
+                    except :   
+                        allImgsXOR = allImgsXOR ^ coverImgs[cover][row][column]
 
                 randcover = random.randint(0,4)
                 min = 999
                 minCovers = []
                 for cover in range( len(coverImgs) ):
-                    tmpMin = abs( ( int( coverImgs[cover][row][column] ) - int( allImgsXOR ^ coverImgs[cover][row][column] )))
+                    try:
+                        tmpMin = abs( ( int( coverImgs[cover][row][column][0] ) - int( allImgsXOR ^ coverImgs[cover][row][column][0] )))
+                    except: 
+                        tmpMin = abs( ( int( coverImgs[cover][row][column] ) - int( allImgsXOR ^ coverImgs[cover][row][column] )))
+                        
                     if tmpMin < min:
                         minCovers.clear()
                         min = tmpMin 
@@ -83,17 +96,27 @@ if __name__ == "__main__":
                         minCovers.append(cover)
 
                 if len(minCovers) > 1 :
-                    count[5]+=1
+                    #count[5]+=1
                     randcover = random.choice(minCovers)
                 elif len(minCovers) == 1:
                     randcover = minCovers[0]
                 
-                count[randcover]+=1
+                # count[randcover]+=1
                 
                 #allImgsXOR = secret[row][column] ^ allImgsXOR
-                
-                shareImgs[randcover][row][column] = allImgsXOR ^ coverImgs[randcover][row][column]
-    
+               
+                for cover in range(len(coverImgs)):
+                    if cover != randcover:
+                        try :
+                            shareImgs[cover][row][column] = coverImgs[cover][row][column][0]
+                        except:
+                            shareImgs[cover][row][column] = coverImgs[cover][row][column]
+                    else:
+                        try :
+                            shareImgs[randcover][row][column] = allImgsXOR ^ coverImgs[randcover][row][column][0]
+                        except:
+                            shareImgs[randcover][row][column] = allImgsXOR ^ coverImgs[randcover][row][column]
+                    
     psnr = []
     for cover in range(5):
         mse = countmse( coverImgs[cover],shareImgs[cover],512,512)
@@ -105,15 +128,15 @@ if __name__ == "__main__":
   
     outi = 0
     for i in range( len(shareImgs) ):
-        aa = Image.fromarray( shareImgs[i] )
-        aa.save(str( i ) +" algo2_0.75" +".png" ) 
+        aa = Image.fromarray( shareImgs[i].astype(np.uint8) )
+        aa.save(str( i ) +" algo2" +".png" ) 
         aa.show()
 
     for i in range ( len(shareImgs) ) :
         outi = outi ^ shareImgs[i]
 
     
-    o = Image.fromarray(outi)
+    o = Image.fromarray(outi.astype(np.uint8))
     o.save("output_algo2_0.75.png") 
     o.show()
     
